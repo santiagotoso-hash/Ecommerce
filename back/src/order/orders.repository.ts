@@ -1,0 +1,111 @@
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Orders } from './entities/orders.entity';
+import { OrderDetails } from './entities/orderDetails.entity';
+import { Users } from '../users/entities/user.entity';
+import { Products } from '../products/entities/product.entity';
+import { NotFoundException, BadRequestException } from '@nestjs/common';
+import { CreateOrderDto } from './dto/order.dto';
+
+@Injectable()
+export class OrdersRepository {
+  constructor(
+    @InjectRepository(Orders)
+    private ormOrdersRepository: Repository<Orders>,
+    @InjectRepository(OrderDetails)
+    private ormOrderDetailsRepository: Repository<OrderDetails>,
+    @InjectRepository(Users)
+    private ormUsersRepository: Repository<Users>,
+    @InjectRepository(Products)
+    private ormProductsRepository: Repository<Products>,
+  ) {}
+
+  async getAllOrders() {
+    return await this.ormOrdersRepository.find({
+      relations: {
+        users: true,
+        orderDetail: {
+          products: true,
+        },
+      },
+    });
+  }
+  async getOrderById(id: string): Promise<Orders | string> {
+    const order = await this.ormOrdersRepository.findOne({
+      where: { id },
+      relations: {
+        orderDetail: {
+          products: true,
+        },
+      },
+    });
+    if (!order) {
+      throw new NotFoundException(`Orden con id ${id} no encontrada`);
+    }
+    return order;
+  }
+
+  async addOrder(createOrderDto: CreateOrderDto): Promise<Orders> {
+    const { userId, products } = createOrderDto;
+
+    const user = await this.ormUsersRepository.findOneBy({ id: userId });
+    if (!user) {
+      throw new NotFoundException(`Usuario con id ${userId} no encontrado`);
+    }
+    const order = new Orders();
+    order.date = new Date();
+    order.users = user;
+    const newOrder = await this.ormOrdersRepository.save(order);
+
+    const productsArray = await Promise.all(
+      products.map(async (element: any) => {
+        const product = await this.ormProductsRepository.findOneBy({
+          id: element.id,
+        });
+        if (!product) {
+          throw new NotFoundException(
+            `Producto con id ${element.id} no encontrado`,
+          );
+        }
+        // Verificar stock
+        if (product.stock < 1) {
+          throw new BadRequestException(
+            `No hay stock disponible para ${product.name}`,
+          );
+        }
+
+        await this.ormProductsRepository.update(
+          { id: element.id },
+          { stock: product.stock - 1 },
+        );
+        return product;
+      }),
+    );
+    const total = productsArray.reduce(
+      (sum, product) => sum + Number(product.price),
+      0,
+    );
+
+    const orderDetail = new OrderDetails();
+    orderDetail.price = Number(Number(total).toFixed(2));
+    orderDetail.products = productsArray;
+    orderDetail.orders = newOrder;
+    await this.ormOrderDetailsRepository.save(orderDetail);
+
+    const savedOrder = await this.ormOrdersRepository.findOne({
+      where: { id: newOrder.id },
+      relations: {
+        orderDetail: {
+          products: true,
+        },
+      },
+    });
+
+    if (!savedOrder) {
+      throw new NotFoundException(`Order con id ${newOrder.id} no encontrada`);
+    }
+
+    return savedOrder;
+  }
+}
