@@ -3,12 +3,12 @@ import { OrdersService } from './orders.service';
 import { OrdersController } from './orders.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Orders } from './entities/orders.entity';
-import { OrderDetails } from 'src/order/entities/orderDetails.entity';
+import { OrderDetails } from '../order/entities/orderDetails.entity';
 import { OrdersRepository } from './orders.repository';
 import { ProductRepository } from '../products/products.repository';
 import { Users } from '../users/entities/user.entity';
 import { Products } from '../products/entities/product.entity';
-import { Category } from 'src/category/entities/category.entity';
+import { Category } from '../category/entities/category.entity';
 
 @Module({
   imports: [

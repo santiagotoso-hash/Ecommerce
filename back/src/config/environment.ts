@@ -12,4 +12,7 @@ export const environment = {
   DB_NAME: process.env.DB_NAME || '',
   DB_USERNAME: process.env.DB_USERNAME || '',
   DB_PASSWORD: process.env.DB_PASSWORD || '',
+
+  ///JWT
+  JWT_SECRET: process.env.JWT_SECRET,
 };

@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { FileUploadRepository } from './files.repository';
-import { ProductRepository } from 'src/products/products.repository';
+import { ProductRepository } from '../products/products.repository';
 
 @Injectable()
 export class FilesService {

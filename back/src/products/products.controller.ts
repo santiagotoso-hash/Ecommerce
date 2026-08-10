@@ -10,12 +10,20 @@ import {
   Put,
   Query,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import type { CreateProductDto } from './dto/product.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { AuthGuard } from '../auth/guards/auth.guard';
+import { Roles } from '../decorators/roles.decorator';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Role } from '../common/roles.enum';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Products')
+@ApiBearerAuth('access-token')
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
@@ -24,30 +32,27 @@ export class ProductsController {
   addProdcuts() {
     return this.productsService.addProducts();
   }
+
   @Get()
+  @UseGuards(AuthGuard)
   getProducts(@Query('page') page: string, @Query('limit') limit: string) {
     if (page && limit)
       return this.productsService.getProducts(Number(page), Number(limit));
     return this.productsService.getProducts(Number(1), Number(5));
   }
 
+  @ApiBearerAuth()
   @Get(':id')
+  @UseGuards(AuthGuard)
   @HttpCode(200)
   getProductById(@Param('id', ParseUUIDPipe) id: string) {
     return this.productsService.getProductById(id);
   }
 
-  // @Post()
-  // @HttpCode(201)
-  // async createProduct(@Body() product: CreateProductDto) {
-  //   const newProduct = await this.productsService.createProduct(product);
-
-  //   return {
-  //     id: newProduct.id,
-  //   };
-  // }
-
+  @ApiBearerAuth()
   @Put(':id')
+  @Roles(Role.Admin, Role.Tester)
+  @UseGuards(AuthGuard, RolesGuard)
   @HttpCode(200)
   updateProduct(
     @Param('id', ParseUUIDPipe) id: string,
@@ -56,13 +61,17 @@ export class ProductsController {
     return this.productsService.updateProduct(id, product);
   }
 
+  @ApiBearerAuth()
   @Delete(':id')
+  @UseGuards(AuthGuard)
   @HttpCode(200)
   deleteProduct(@Param('id', ParseUUIDPipe) id: string) {
     return this.productsService.deleteProduct(id);
   }
 
+  @ApiBearerAuth()
   @Post('upload')
+  @UseGuards(AuthGuard)
   @UseInterceptors(FileInterceptor('file'))
   uploadFile(@UploadedFile() file: File) {
     return file;

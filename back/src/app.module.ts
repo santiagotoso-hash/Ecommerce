@@ -18,6 +18,8 @@ import { LoggerMiddleware } from './middlewares/logger.middleware';
 import { CategoryService } from './category/category.service';
 import { ProductsService } from './products/products.service';
 import { FilesModule } from './files/files.module';
+import { JwtModule } from '@nestjs/jwt';
+import { environment } from './config/environment';
 
 @Module({
   imports: [
@@ -36,6 +38,11 @@ import { FilesModule } from './files/files.module';
     CategoryModule,
     OrderModule,
     FilesModule,
+    JwtModule.register({
+      global: true,
+      secret: environment.JWT_SECRET,
+      signOptions: { expiresIn: '60min' },
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

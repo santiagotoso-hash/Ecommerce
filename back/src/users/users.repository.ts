@@ -3,7 +3,6 @@ import {
   BadRequestException,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateUserDto, User } from './users.interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from './entities/user.entity';
 import { Repository } from 'typeorm';
@@ -27,7 +26,7 @@ export class UsersRepository {
     return allUsers.map(({ password, ...userNoPassword }) => userNoPassword);
   }
 
-  async getUserById(id: string): Promise<Omit<Users, 'password'>> {
+  async getUserById(id: string): Promise<Omit<Users, 'password' | 'isAdmin'>> {
     const foundUser = await this.ormUserRepository.findOne({
       where: { id },
       relations: {
@@ -41,7 +40,7 @@ export class UsersRepository {
     if (!foundUser) {
       throw new NotFoundException(`No se encontró el usuario con el id ${id}`);
     }
-    const { password, ...userNoPassword } = foundUser;
+    const { password, isAdmin, ...userNoPassword } = foundUser;
     return userNoPassword;
   }
 
@@ -51,25 +50,12 @@ export class UsersRepository {
     });
   }
 
-  async addUser(newUserData: CreateUserDto): Promise<string> {
-    try {
-      const savedUser = await this.ormUserRepository.save(newUserData);
-      return savedUser.id;
-    } catch (error) {
-      const err = error as { code?: string };
-
-      if (err.code === '23505') {
-        throw new BadRequestException('Ya existe un usuario con ese email.');
-      }
-
-      throw error;
-    }
+  async addUser(newUserData: CreateUserDTO): Promise<string> {
+    const savedUser = await this.ormUserRepository.save(newUserData);
+    return savedUser.id;
   }
 
-  async updateUser(
-    id: string,
-    newUserData: UpdateUserDTO,
-  ): Promise<Omit<Users, 'password'>> {
+  async makeUserAdmin(id: string): Promise<Omit<Users, 'password'>> {
     const user = await this.ormUserRepository.findOne({
       where: { id },
     });
@@ -77,12 +63,23 @@ export class UsersRepository {
     if (!user) {
       throw new NotFoundException(`No se encontró el usuario con el id ${id}`);
     }
-    const mergedUser = this.ormUserRepository.merge(user, newUserData);
 
-    const updatedUser = await this.ormUserRepository.save(mergedUser);
+    user.isAdmin = true;
+
+    const updatedUser = await this.ormUserRepository.save(user);
 
     const { password, ...userNoPassword } = updatedUser;
 
     return userNoPassword;
+  }
+
+  async deleteUserById(id: string): Promise<string> {
+    const result = await this.ormUserRepository.delete(id);
+
+    if (result.affected === 0) {
+      throw new NotFoundException(`Usuario con id ${id} no encontrado.`);
+    }
+
+    return 'Usuario eliminado correctamente.';
   }
 }

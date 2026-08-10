@@ -16,17 +16,14 @@ export class UsersService {
     return this.usersRepository.getUserById(id);
   }
 
-  addUser(createUserDto: CreateUserDTO) {
-    return this.usersRepository.addUser(createUserDto);
+  async makeUserAdmin(id: string) {
+    return this.usersRepository.makeUserAdmin(id);
   }
 
-  async updateUser(id: string, userData: UpdateUserDTO) {
-    return this.usersRepository.updateUser(id, userData);
+  async deleteUserById(id: string): Promise<string> {
+    return await this.usersRepository.deleteUserById(id);
   }
 
-  // deleteUser(id: string) {
-  //   return this.usersRepository.deleteUser(id);
-  // }
   async getUserByEmail(email: string) {
     const user = await this.usersRepository.getUserByEmail(email);
 

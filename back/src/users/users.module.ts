@@ -5,9 +5,8 @@ import { LoggerMiddleware } from '../middlewares/logger.middleware';
 import { UsersRepository } from './users.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Users } from './entities/user.entity';
-import { CloudinaryConfig } from 'src/config/cloudinary';
+import { CloudinaryConfig } from '../config/cloudinary';
 import { CloudinaryService } from './cloudinary.service';
-// import { UsersDBService } from './usersDB.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Users])],
