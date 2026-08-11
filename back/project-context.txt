@@ -1,0 +1,1457 @@
+# PROJECT CONTEXT
+
+# PM4BE - Backend NestJS
+
+# ============================================================
+
+## 1. PROJECT OVERVIEW
+
+Project name:
+
+PM4BE - Backend
+
+Repository:
+
+PM4BE-santiagotoso-hash
+
+Current backend directory:
+
+back/
+
+The project is a REST API backend developed with NestJS and TypeScript.
+
+The backend manages:
+
+* Users
+* Authentication
+* Products
+* Categories
+* Orders
+* Order details
+* Product images
+* User roles
+* Cloudinary image storage
+
+The project is part of a Full Stack application.
+
+---
+
+# 2. TECHNOLOGY STACK
+
+Main technologies currently identified:
+
+* Node.js
+* NestJS
+* TypeScript
+* TypeORM
+* PostgreSQL
+* JWT
+* bcrypt
+* class-validator
+* class-transformer
+* Swagger / OpenAPI
+* Jest
+* Cloudinary
+* Multer
+
+The exact versions must always be checked in:
+
+package.json
+
+Do not assume dependency versions from this document.
+
+---
+
+# 3. CURRENT SOURCE STRUCTURE
+
+The current src structure is:
+
+src/
+├── app.controller.spec.ts
+├── app.controller.ts
+├── app.module.ts
+├── app.service.ts
+├── main.ts
+│
+├── auth/
+│   ├── auth.controller.ts
+│   ├── auth.module.ts
+│   ├── auth.service.ts
+│   ├── auth.service.spec.ts
+│   └── guards/
+│       ├── auth.guard.ts
+│       └── roles.guard.ts
+│
+├── category/
+│   ├── category.controller.ts
+│   ├── category.module.ts
+│   ├── category.service.ts
+│   ├── catogory.respository.ts
+│   ├── dto/
+│   │   ├── create-category.dto.ts
+│   │   └── update-category.dto.ts
+│   └── entities/
+│       └── category.entity.ts
+│
+├── common/
+│   └── roles.enum.ts
+│
+├── config/
+│   ├── cloudinary.ts
+│   ├── environment.ts
+│   └── typeorm.ts
+│
+├── datos/
+│   └── ArchivoDatos.ts
+│
+├── decorators/
+│   ├── matchPassword.decorator.ts
+│   └── roles.decorator.ts
+│
+├── files/
+│   ├── entities/
+│   │   └── file.entity.ts
+│   ├── files.controller.ts
+│   ├── files.module.ts
+│   ├── files.repository.ts
+│   └── files.service.ts
+│
+├── middlewares/
+│   └── logger.middleware.ts
+│
+├── order/
+│   ├── dto/
+│   │   ├── order.dto.ts
+│   │   └── update-order.dto.ts
+│   ├── entities/
+│   │   ├── orderDetails.entity.ts
+│   │   └── orders.entity.ts
+│   ├── orders.controller.ts
+│   ├── orders.module.ts
+│   ├── orders.repository.ts
+│   └── orders.service.ts
+│
+├── products/
+│   ├── dto/
+│   │   └── product.dto.ts
+│   ├── entities/
+│   │   └── product.entity.ts
+│   ├── product.interface.ts
+│   ├── products.controller.ts
+│   ├── products.module.ts
+│   ├── products.repository.ts
+│   └── products.service.ts
+│
+└── users/
+├── cloudinary.service.ts
+├── dto/
+│   ├── loginUser.dto.ts
+│   ├── updateUser.dto.ts
+│   └── user.dto.ts
+├── entities/
+│   └── user.entity.ts
+├── user.repository.spec.ts
+├── user.service.spec.ts
+├── users.controller.ts
+├── users.interface.ts
+├── users.module.ts
+├── users.repository.ts
+└── users.service.ts
+
+---
+
+# 4. IMPORTANT PROJECT RULE
+
+This document describes the currently known architecture.
+
+The actual source code is always the source of truth.
+
+Before suggesting modifications:
+
+1. Read this project-context.txt.
+2. Inspect the actual files involved.
+3. Verify imports.
+4. Verify entities.
+5. Verify DTOs.
+6. Verify services.
+7. Verify repositories.
+8. Verify module configuration.
+9. Verify database relationships.
+10. Only then propose modifications.
+
+Never invent files, methods, entities, endpoints, properties or relationships.
+
+---
+
+# 5. BUSINESS REQUIREMENTS
+
+According to estructura.md:
+
+A user can:
+
+* Register in the application.
+* Login using credentials.
+* Purchase products.
+* Use a shopping cart.
+* Create a purchase order.
+* Have orders associated with the user.
+* Have order details containing purchased products.
+
+An administrator can:
+
+* Update product information.
+* Update product stock.
+* Add product images.
+* Use a cloud image service.
+
+---
+
+# 6. BUSINESS MODEL
+
+The original business specification describes:
+
+USER
+
+Fields:
+
+* id
+* name
+* email
+* password
+* role
+* createdAt
+* updatedAt
+
+Relationships:
+
+* User -> Order: 1:N
+* User -> Cart: 1:1
+
+PRODUCT
+
+Fields:
+
+* id
+* name
+* description
+* price
+* stock
+* imageUrl
+* createdAt
+* updatedAt
+* categoryId
+
+Relationships described in the original specification:
+
+* Product -> Order
+* Product -> User
+
+CATEGORY
+
+Fields:
+
+* id
+* name
+
+CART
+
+Fields:
+
+* id
+* userId
+
+CARTITEM
+
+Fields:
+
+* id
+* cartId
+* productId
+
+ORDER
+
+Fields:
+
+* id
+* date
+* status
+* total
+* userId
+
+ADMIN
+
+Administrative role with permissions to manage products and images.
+
+---
+
+# 7. IMPORTANT DIFFERENCE BETWEEN SPECIFICATION AND CURRENT CODE
+
+The original business specification mentions:
+
+* Cart
+* CartItem
+
+However, there are currently NO Cart or CartItem files in the src structure.
+
+Therefore:
+
+Cart and CartItem are currently:
+
+PENDING IMPLEMENTATION OR VERIFICATION
+
+Do NOT create them automatically.
+
+First determine whether they are intentionally omitted, implemented elsewhere, or still pending.
+
+---
+
+# 8. CURRENT ENTITIES IDENTIFIED
+
+Current source files include:
+
+User:
+
+src/users/entities/user.entity.ts
+
+Product:
+
+src/products/entities/product.entity.ts
+
+Category:
+
+src/category/entities/category.entity.ts
+
+Orders:
+
+src/order/entities/orders.entity.ts
+
+Order details:
+
+src/order/entities/orderDetails.entity.ts
+
+File:
+
+src/files/entities/file.entity.ts
+
+The exact fields and relationships must be read from the entity files.
+
+Do not infer entity properties only from estructura.md.
+
+---
+
+# 9. AUTH MODULE
+
+Current files:
+
+src/auth/auth.controller.ts
+src/auth/auth.module.ts
+src/auth/auth.service.ts
+
+Guards:
+
+src/auth/guards/auth.guard.ts
+src/auth/guards/roles.guard.ts
+
+Authentication endpoints currently identified:
+
+POST /auth/signup
+
+POST /auth/signin
+
+The global API prefix must be checked in main.ts.
+
+If the application uses:
+
+app.setGlobalPrefix('api')
+
+then the actual endpoints become:
+
+POST /api/auth/signup
+
+POST /api/auth/signin
+
+Do not assume the prefix without checking main.ts.
+
+---
+
+# 10. AUTH SIGNUP
+
+Current controller:
+
+src/auth/auth.controller.ts
+
+Endpoint:
+
+POST auth/signup
+
+Body:
+
+CreateUserDTO
+
+Imported from:
+
+src/users/dto/user.dto.ts
+
+The controller delegates to:
+
+AuthService.signUp()
+
+The controller should remain responsible for HTTP handling.
+
+Business logic belongs in AuthService.
+
+---
+
+# 11. AUTH SIGNIN
+
+Endpoint:
+
+POST auth/signin
+
+Body:
+
+LoginUserDTO
+
+Imported from:
+
+src/users/dto/loginUser.dto.ts
+
+The controller extracts:
+
+email
+password
+
+and delegates to:
+
+AuthService.signIn(email, password)
+
+---
+
+# 12. AUTH GUARD
+
+Current file:
+
+src/auth/guards/auth.guard.ts
+
+The project uses a custom AuthGuard.
+
+Endpoints can be protected with:
+
+@UseGuards(AuthGuard)
+
+The guard should be inspected before creating another authentication guard.
+
+Do NOT create a second JWT guard if AuthGuard already performs JWT validation.
+
+---
+
+# 13. ROLES GUARD
+
+Current file:
+
+src/auth/guards/roles.guard.ts
+
+Roles decorator:
+
+src/decorators/roles.decorator.ts
+
+Roles enum:
+
+src/common/roles.enum.ts
+
+The project uses:
+
+@Roles(...)
+
+and:
+
+@UseGuards(AuthGuard, RolesGuard)
+
+for role-based authorization.
+
+---
+
+# 14. CURRENT ROLES
+
+Known roles:
+
+Role.Admin
+Role.Tester
+
+The enum may also contain another role.
+
+The exact implementation must be verified in:
+
+src/common/roles.enum.ts
+
+Do not invent role values.
+
+---
+
+# 15. CATEGORY MODULE
+
+Current files:
+
+src/category/category.controller.ts
+src/category/category.module.ts
+src/category/category.service.ts
+src/category/catogory.respository.ts
+
+DTOs:
+
+src/category/dto/create-category.dto.ts
+src/category/dto/update-category.dto.ts
+
+Entity:
+
+src/category/entities/category.entity.ts
+
+IMPORTANT:
+
+The repository filename contains a spelling mistake:
+
+catogory.respository.ts
+
+This should not automatically be renamed.
+
+Before renaming it, check all imports and references.
+
+---
+
+# 16. CATEGORY CONTROLLER
+
+Base route:
+
+category
+
+Endpoints identified:
+
+GET /category/seeder
+
+GET /category
+
+GET /category/:id
+
+DELETE /category/:id
+
+Swagger bearer authentication is declared for these endpoints.
+
+The controller currently uses:
+
+ParseUUIDPipe
+
+for category IDs.
+
+However, the current code contains:
+
+this.categoryService.findOne(+id)
+
+and:
+
+@Param('id', ParseUUIDPipe) id: string
+
+This is potentially inconsistent.
+
+A UUID string should not normally be converted using:
+
++id
+
+This must be investigated against the actual Category entity ID type.
+
+Do not fix automatically without checking the entity and repository.
+
+---
+
+# 17. PRODUCTS MODULE
+
+Current files:
+
+src/products/products.controller.ts
+src/products/products.module.ts
+src/products/products.service.ts
+src/products/products.repository.ts
+
+DTO:
+
+src/products/dto/product.dto.ts
+
+Entity:
+
+src/products/entities/product.entity.ts
+
+Interface:
+
+src/products/product.interface.ts
+
+---
+
+# 18. PRODUCTS ENDPOINTS
+
+Current controller:
+
+ProductsController
+
+Base route:
+
+products
+
+Endpoints:
+
+GET /products/seeder
+
+GET /products
+
+GET /products/:id
+
+PUT /products/:id
+
+DELETE /products/:id
+
+POST /products/upload
+
+Authentication and authorization differ between endpoints.
+
+This must be preserved unless intentionally changed.
+
+---
+
+# 19. PRODUCT LIST PAGINATION
+
+GET /products
+
+Accepts query parameters:
+
+page
+limit
+
+If both exist:
+
+productsService.getProducts(Number(page), Number(limit))
+
+Otherwise defaults to:
+
+page = 1
+limit = 5
+
+Potential validation improvements can be suggested, but do not change behavior without explaining it.
+
+---
+
+# 20. PRODUCT UPDATE
+
+PUT /products/:id
+
+Requires:
+
+AuthGuard
+RolesGuard
+
+Allowed roles:
+
+Role.Admin
+Role.Tester
+
+The request body is:
+
+CreateProductDto
+
+Imported as a type from:
+
+src/products/dto/product.dto.ts
+
+Potential improvement:
+
+An update-specific DTO may be preferable.
+
+However, inspect the current DTO and project requirements before changing it.
+
+---
+
+# 21. PRODUCT DELETE
+
+DELETE /products/:id
+
+Requires:
+
+AuthGuard
+
+Current controller does NOT explicitly require RolesGuard.
+
+Therefore:
+
+Do not assume only Admin can delete products.
+
+This is a potential authorization rule to review.
+
+---
+
+# 22. PRODUCT FILE UPLOAD
+
+POST /products/upload
+
+Uses:
+
+FileInterceptor('file')
+
+and:
+
+@UploadedFile()
+
+The current method returns the uploaded file directly.
+
+This appears to be a different upload mechanism from:
+
+POST /files/uploadImage/:id
+
+The purpose and relationship between these two endpoints must be investigated.
+
+Do not remove either one without verifying usage.
+
+---
+
+# 23. FILES MODULE
+
+Current files:
+
+src/files/files.controller.ts
+src/files/files.module.ts
+src/files/files.repository.ts
+src/files/files.service.ts
+
+Entity:
+
+src/files/entities/file.entity.ts
+
+The FilesController is responsible for product image upload.
+
+---
+
+# 24. PRODUCT IMAGE UPLOAD
+
+Endpoint:
+
+POST /files/uploadImage/:id
+
+The id represents:
+
+product id
+
+Authentication:
+
+AuthGuard
+
+Authorization:
+
+RolesGuard
+
+Allowed roles:
+
+Role.Admin
+Role.Tester
+
+Upload middleware:
+
+FileInterceptor('file')
+
+---
+
+# 25. IMAGE VALIDATION
+
+The upload uses:
+
+ParseFilePipe
+
+with:
+
+MaxFileSizeValidator
+
+and:
+
+FileTypeValidator
+
+Current configured maximum:
+
+2000000 bytes
+
+The error message currently says:
+
+"Tamaño de imagen debe ser menor a 200kb"
+
+There is a discrepancy:
+
+2,000,000 bytes is approximately 2 MB, not 200 KB.
+
+This should be flagged for review.
+
+Do not silently change it.
+
+---
+
+# 26. SUPPORTED IMAGE TYPES
+
+Current FileTypeValidator pattern:
+
+jpg
+jpeg
+png
+webp
+avif
+
+This is the current intended set according to the controller.
+
+---
+
+# 27. CLOUDINARY
+
+Cloudinary configuration:
+
+src/config/cloudinary.ts
+
+There is also:
+
+src/users/cloudinary.service.ts
+
+and FilesService.
+
+The project therefore appears to contain Cloudinary-related logic in more than one location.
+
+This should be investigated.
+
+Do not duplicate Cloudinary functionality.
+
+Prefer one coherent implementation.
+
+---
+
+# 28. USERS MODULE
+
+Current files:
+
+src/users/users.controller.ts
+src/users/users.module.ts
+src/users/users.service.ts
+src/users/users.repository.ts
+src/users/users.interface.ts
+src/users/cloudinary.service.ts
+
+DTOs:
+
+src/users/dto/loginUser.dto.ts
+src/users/dto/updateUser.dto.ts
+src/users/dto/user.dto.ts
+
+Entity:
+
+src/users/entities/user.entity.ts
+
+---
+
+# 29. USERS ENDPOINTS
+
+Current routes:
+
+GET /users
+
+GET /users/search/email
+
+GET /users/:id
+
+PATCH /users/:id/admin
+
+DELETE /users/:id
+
+---
+
+# 30. GET ALL USERS
+
+GET /users
+
+Authorization:
+
+AuthGuard
+RolesGuard
+
+Allowed roles:
+
+Role.Admin
+Role.Tester
+
+Supports:
+
+page
+limit
+
+Default:
+
+page = 1
+limit = 5
+
+The controller validates numeric values manually.
+
+---
+
+# 31. SEARCH USER BY EMAIL
+
+GET /users/search/email
+
+Requires:
+
+AuthGuard
+
+Query:
+
+email
+
+The controller delegates to:
+
+usersService.getUserByEmail(email)
+
+---
+
+# 32. GET USER BY ID
+
+GET /users/:id
+
+Requires:
+
+AuthGuard
+
+Uses:
+
+ParseUUIDPipe
+
+Therefore the expected ID format is UUID according to the controller.
+
+The entity must be checked to confirm this.
+
+---
+
+# 33. MAKE USER ADMIN
+
+PATCH /users/:id/admin
+
+Requires:
+
+AuthGuard
+RolesGuard
+
+Allowed role:
+
+Role.Admin
+
+Calls:
+
+usersService.makeUserAdmin(id)
+
+This endpoint changes a user's role.
+
+This is a security-sensitive operation.
+
+Do not weaken its authorization.
+
+---
+
+# 34. DELETE USER
+
+DELETE /users/:id
+
+Requires:
+
+AuthGuard
+
+Does not explicitly require RolesGuard.
+
+This is a potential authorization issue to review.
+
+Do not automatically change it without checking business requirements.
+
+---
+
+# 35. ORDERS MODULE
+
+Current files:
+
+src/order/orders.controller.ts
+src/order/orders.module.ts
+src/order/orders.service.ts
+src/order/orders.repository.ts
+
+DTOs:
+
+src/order/dto/order.dto.ts
+src/order/dto/update-order.dto.ts
+
+Entities:
+
+src/order/entities/orders.entity.ts
+src/order/entities/orderDetails.entity.ts
+
+---
+
+# 36. ORDERS ENDPOINTS
+
+Base route:
+
+orders
+
+Current endpoints:
+
+GET /orders
+
+POST /orders
+
+GET /orders/:id
+
+DELETE /orders/:id
+
+---
+
+# 37. GET ALL ORDERS
+
+GET /orders
+
+Uses:
+
+@ApiBearerAuth()
+
+but the current controller does not show:
+
+@UseGuards(AuthGuard)
+
+This should be reviewed.
+
+Swagger documentation is NOT equivalent to authentication.
+
+@ApiBearerAuth() only documents authentication requirements.
+
+It does not protect the endpoint.
+
+---
+
+# 38. CREATE ORDER
+
+POST /orders
+
+Uses:
+
+AuthGuard
+
+Body:
+
+CreateOrderDto
+
+from:
+
+src/order/dto/order.dto.ts
+
+Delegates to:
+
+orderService.addOrder(createOrderDto)
+
+The exact relationship between the authenticated user and the order must be checked in the service.
+
+---
+
+# 39. GET ORDER BY ID
+
+GET /orders/:id
+
+Requires:
+
+AuthGuard
+
+Uses:
+
+ParseUUIDPipe
+
+Delegates to:
+
+orderService.getOrderById(id)
+
+---
+
+# 40. DELETE ORDER
+
+DELETE /orders/:id
+
+The current controller uses:
+
+@ApiBearerAuth()
+
+but does not show:
+
+@UseGuards(AuthGuard)
+
+This should be reviewed.
+
+---
+
+# 41. ORDER DTO
+
+Current file:
+
+src/order/dto/order.dto.ts
+
+The exact properties must be read from the file.
+
+Do not infer the DTO structure exclusively from estructura.md.
+
+If the DTO contains products, use a dedicated DTO for each product item rather than exposing TypeORM entities directly to Swagger/class-validator.
+
+---
+
+# 42. IMPORTANT DTO RULE
+
+Entities should not be used directly as request DTOs.
+
+Prefer:
+
+Entity
+↓
+DTO
+↓
+Validation
+↓
+Service
+
+DTOs should contain explicit validation decorators.
+
+Swagger decorators should describe the API contract.
+
+---
+
+# 43. TYPEORM
+
+The project uses TypeORM.
+
+Configuration:
+
+src/config/typeorm.ts
+
+Before changing database behavior inspect:
+
+* DataSource
+* entities
+* synchronize
+* migrations
+* database URL
+* relation configuration
+
+Never enable destructive database options in production.
+
+---
+
+# 44. ENVIRONMENT CONFIGURATION
+
+Current configuration files:
+
+src/config/environment.ts
+src/config/typeorm.ts
+src/config/cloudinary.ts
+
+The exact environment variables must be read from these files and package configuration.
+
+Never place production secrets in this context file.
+
+---
+
+# 45. MIDDLEWARE
+
+Current middleware:
+
+src/middlewares/logger.middleware.ts
+
+Purpose:
+
+Request logging.
+
+Before creating another logger middleware, inspect this implementation.
+
+---
+
+# 46. DECORATORS
+
+Current custom decorators:
+
+src/decorators/matchPassword.decorator.ts
+
+src/decorators/roles.decorator.ts
+
+Do not create duplicate decorators with equivalent behavior.
+
+---
+
+# 47. DATA FILE
+
+Current file:
+
+src/datos/ArchivoDatos.ts
+
+This file may contain seed or static data.
+
+Before changing or deleting it, inspect its usage.
+
+---
+
+# 48. TESTS
+
+Current test files include:
+
+src/app.controller.spec.ts
+
+src/auth/auth.service.spec.ts
+
+src/users/user.repository.spec.ts
+
+src/users/user.service.spec.ts
+
+There may also be tests in:
+
+test/
+
+The testing configuration must be checked before adding new Jest configuration files.
+
+---
+
+# 49. KNOWN POTENTIAL ISSUES TO INVESTIGATE
+
+The following are NOT confirmed bugs.
+
+They are investigation points identified from the current controller/source inventory.
+
+1. CategoryController converts a UUID string using +id.
+
+2. Some endpoints have @ApiBearerAuth() but no AuthGuard.
+
+3. DELETE /users/:id is authenticated but does not explicitly require Admin role.
+
+4. DELETE /products/:id is authenticated but does not explicitly require Admin/Tester.
+
+5. GET /products/seeder does not show authentication.
+
+6. GET /category/seeder does not show AuthGuard.
+
+7. POST /products/upload and POST /files/uploadImage/:id appear to overlap in file-upload functionality.
+
+8. Cloudinary logic exists in config, users and files areas and should be reviewed for duplication.
+
+9. File upload maximum is configured as 2,000,000 bytes while the error message says 200kb.
+
+10. Cart and CartItem are specified in the business model but are not present in src.
+
+11. Product/User/Order relationships must be verified directly in entities.
+
+12. UUID usage must be consistent across entities, DTOs, controllers and repositories.
+
+13. Category repository filename contains spelling mistakes:
+    catogory.respository.ts
+
+14. ProductsController imports CreateProductDto using a type-only import.
+
+15. The project has both order entities and an older business specification mentioning Cart.
+
+These points require source verification before fixing.
+
+---
+
+# 50. SECURITY RULES
+
+Never expose:
+
+* password hashes
+* JWT secrets
+* database passwords
+* Cloudinary secrets
+* API keys
+
+Never place real .env values in this file.
+
+Authentication and authorization must be treated separately:
+
+Authentication:
+
+"Who is the user?"
+
+Authorization:
+
+"What is the user allowed to do?"
+
+@ApiBearerAuth() is documentation only.
+
+@UseGuards(AuthGuard) provides authentication.
+
+@UseGuards(RolesGuard) provides role authorization when combined with @Roles().
+
+---
+
+# 51. CODING RULES FOR AI
+
+When modifying the project:
+
+1. Do not rewrite entire modules unnecessarily.
+2. Prefer minimal changes.
+3. Preserve existing architecture.
+4. Reuse existing services/repositories/guards.
+5. Do not create duplicate functionality.
+6. Do not invent missing files.
+7. Do not assume an entity relationship.
+8. Verify imports after changes.
+9. Verify TypeScript compilation.
+10. Verify affected tests.
+11. Explain breaking changes.
+12. Never silently change business behavior.
+
+---
+
+# 52. DEBUGGING PROCESS
+
+When an error is reported:
+
+First identify:
+
+* exact error message
+* HTTP method
+* URL
+* request body
+* authenticated user
+* relevant controller
+* relevant service
+* relevant repository
+* entity
+* DTO
+
+Then trace:
+
+HTTP Request
+↓
+Controller
+↓
+DTO / Validation
+↓
+Guard
+↓
+Service
+↓
+Repository
+↓
+TypeORM
+↓
+PostgreSQL
+
+Do not fix an error only at the point where it appears.
+
+Find the actual source of the problem.
+
+---
+
+# 53. RESPONSE FORMAT FOR CODE ANALYSIS
+
+When analyzing this project, use this structure:
+
+## Problem
+
+Explain the issue.
+
+## Evidence
+
+Reference the actual file and relevant code.
+
+## Cause
+
+Explain why it happens.
+
+## Impact
+
+Explain what can break.
+
+## Recommended solution
+
+Give the minimal recommended change.
+
+## Code
+
+Provide only the necessary code.
+
+## Verification
+
+Explain how to test it.
+
+---
+
+# 54. OLLAMA OPERATING MODE
+
+The AI must understand that this project is under active development.
+
+Do not assume that previous versions of the project are still valid.
+
+The actual source files are authoritative.
+
+When project-context.txt conflicts with source code:
+
+SOURCE CODE WINS.
+
+When the business specification conflicts with implementation:
+
+REPORT THE DIFFERENCE.
+
+Do not silently change implementation to match the specification.
+
+---
+
+# 55. IMPORTANT INSTRUCTION
+
+Before making any code modification, answer internally:
+
+1. What file is responsible?
+2. What module owns the functionality?
+3. Is there already an implementation?
+4. What entities are involved?
+5. What DTOs are involved?
+6. What guards are involved?
+7. What other endpoints depend on this?
+8. Could the change affect database relationships?
+9. Could the change affect authentication?
+10. Could the change affect existing frontend consumers?
+
+Then propose the smallest safe change.
+
+---
+
+# 56. CURRENT PROJECT STATUS
+
+The project already contains:
+
+* NestJS application
+* Authentication
+* JWT-related guard
+* Roles
+* Users
+* Products
+* Categories
+* Orders
+* Order details
+* Product image upload
+* Cloudinary integration
+* Swagger decorators
+* DTOs
+* TypeORM configuration
+* PostgreSQL integration
+* Tests
+
+The project is NOT a blank NestJS project.
+
+Future assistance should focus on:
+
+* understanding existing implementation
+* correcting bugs
+* completing missing functionality
+* improving validation
+* improving security
+* improving architecture only when justified
+* maintaining compatibility with the existing project
+
+---
+
+# END OF PROJECT CONTEXT
+
+# ============================================================

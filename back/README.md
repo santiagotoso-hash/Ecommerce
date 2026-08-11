@@ -1,98 +1,207 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+PM4BE — E-commerce Backend API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Backend de uma API REST para uma plataforma de e-commerce, desenvolvida com NestJS, PostgreSQL e TypeORM.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+O projeto possui funcionalidades para gerenciamento de usuários, autenticação, produtos, categorias, pedidos e detalhes dos pedidos.
 
-## Description
+🚀 Tecnologias
+NestJS
+TypeScript
+PostgreSQL
+TypeORM
+JWT
+bcrypt
+Swagger
+class-validator / ValidationPipe
+📦 Funcionalidades
+🔐 Auth
+Cadastro de usuários
+Login de usuários
+Autenticação através de JWT
+Controle de acesso por roles
+👤 Users
+Gerenciamento de usuários
+Consulta de usuários
+Controle de usuários administradores
+🛍️ Products
+CRUD de produtos
+Consulta de produtos
+Atualização de produtos
+Paginação na listagem
+📂 Categories
+Gerenciamento de categorias
+Consulta de categorias
+🧾 Orders
+Criação de pedidos
+Consulta de pedidos
+Consulta de pedido por ID
+Associação de produtos aos pedidos
+📋 Order Details
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Os OrderDetails representam os itens relacionados aos pedidos e permitem associar produtos às respectivas ordens.
 
-## Project setup
+🏗️ Estrutura do projeto
+src/
+├── auth/
+├── category/
+├── files/
+├── order/
+├── products/
+├── users/
+├── app.controller.ts
+├── app.module.ts
+└── main.ts
+⚙️ Instalação
 
-```bash
-$ npm install
-```
+Clone o repositório:
 
-## Compile and run the project
+git clone https://github.com/pi-rym/PM4BE-santiagotoso-hash.git
 
-```bash
-# development
-$ npm run start
+Entre na pasta:
 
-# watch mode
-$ npm run start:dev
+cd PM4BE-santiagotoso-hash
 
-# production mode
-$ npm run start:prod
-```
+Instale as dependências:
 
-## Run tests
+npm install
+🔐 Configuração
 
-```bash
-# unit tests
-$ npm run test
+A aplicação utiliza variáveis de ambiente através do módulo de configuração do projeto.
 
-# e2e tests
-$ npm run test:e2e
+Crie um arquivo .env com as configurações necessárias para o ambiente.
 
-# test coverage
-$ npm run test:cov
-```
+Exemplo:
 
-## Deployment
+DATABASE_URL=postgresql://USER:PASSWORD@HOST:PORT/DATABASE
+JWT_SECRET=your-secret-key
+PORT=3000
+DB_HOST=localhost
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+Os nomes e valores definitivos das variáveis devem corresponder ao arquivo de configuração environment utilizado pelo projeto.
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Nunca versione o arquivo .env no Git.
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+🗄️ Banco de dados
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+O projeto utiliza:
 
-## Resources
+PostgreSQL como banco de dados
+TypeORM como ORM
 
-Check out a few resources that may come in handy when working with NestJS:
+A conexão é configurada através das variáveis de ambiente.
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+▶️ Executando a aplicação
+Desenvolvimento
+npm run start:dev
+Produção
 
-## Support
+Primeiro compile:
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+npm run build
 
-## Stay in touch
+Depois execute:
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+npm run start:prod
 
-## License
+A aplicação utiliza a porta definida pela variável de ambiente PORT.
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Por padrão, caso configurada como 3000:
+
+http://localhost:3000
+📚 Swagger
+
+A API possui documentação integrada através do Swagger.
+
+A documentação é disponibilizada na rota:
+
+http://localhost:3000/api
+
+O título da documentação é:
+
+Proyecto Integrador M4 - Back - Ecommerce
+
+Versão:
+
+1.0.0
+
+A API está configurada para autenticação Bearer utilizando JWT.
+
+No Swagger, utilize:
+
+Authorize
+
+e informe:
+
+Bearer SEU_TOKEN
+
+O esquema de autenticação configurado na documentação é:
+
+HTTP Bearer
+JWT
+🛡️ Validação
+
+A aplicação utiliza o ValidationPipe global do NestJS:
+
+app.useGlobalPipes(
+new ValidationPipe({
+whitelist: true,
+}),
+);
+
+Com whitelist: true, propriedades que não estiverem declaradas nos DTOs de validação são removidas dos objetos recebidos pela API.
+
+Os DTOs são utilizados para controlar e validar os dados recebidos pelos endpoints.
+
+🔑 Autenticação
+
+Os endpoints protegidos utilizam JWT.
+
+Depois de realizar o login, o token retornado deve ser enviado no header:
+
+Authorization: Bearer SEU_TOKEN
+
+Exemplo:
+
+GET /products
+Authorization: Bearer eyJhbGciOiJIUzI1Ni...
+👥 Autorização
+
+O projeto possui controle de acesso baseado em roles.
+
+Os usuários podem possuir diferentes níveis de acesso, incluindo:
+
+USER
+ADMIN
+
+A autorização é implementada através dos Guards do NestJS.
+
+🧪 Testes
+
+Execute os testes com:
+
+npm run test
+
+Modo watch:
+
+npm run test:watch
+📌 Objetivo
+
+O projeto foi desenvolvido como uma API backend de e-commerce, aplicando conceitos de:
+
+NestJS
+TypeScript
+API REST
+PostgreSQL
+TypeORM
+JWT
+bcrypt
+Swagger
+DTOs
+Validação
+Guards
+Roles
+CRUD
+Relacionamentos entre entidades
+👨‍💻 Autor
+
+Santiago Toso

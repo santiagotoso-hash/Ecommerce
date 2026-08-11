@@ -56,7 +56,7 @@ export class AppModule implements NestModule, OnApplicationBootstrap {
     consumer.apply(LoggerMiddleware).forRoutes('*');
   }
   async onApplicationBootstrap() {
-    await this.categoryService.addCategory();
+    await this.categoryService.addCategories();
     console.log('Categorias cargadas desde el seeder');
 
     await this.productsService.addProducts();

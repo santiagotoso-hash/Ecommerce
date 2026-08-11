@@ -3,9 +3,13 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
+
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+
 import { Category } from './entities/category.entity';
+import { CreateCategoryDto } from './dto/create-category.dto';
+
 import { datosPre } from '../datos/ArchivoDatos';
 
 @Injectable()
@@ -15,10 +19,38 @@ export class CategoryRepository {
     private readonly ormCategoryRepository: Repository<Category>,
   ) {}
 
-  async getAllCategories(): Promise<Category[]> {
+  // GET ALL CATEGORIES
+  async findAll(): Promise<Category[]> {
     return this.ormCategoryRepository.find();
   }
 
+  // GET CATEGORY BY ID
+  async findById(id: number): Promise<Category> {
+    const category = await this.ormCategoryRepository.findOne({
+      where: { id },
+    });
+
+    if (!category) {
+      throw new NotFoundException(`No existe una categoría con el id ${id}`);
+    }
+
+    return category;
+  }
+
+  // POST CATEGORY
+  async addCategory(createCategoryDto: CreateCategoryDto): Promise<Category> {
+    try {
+      const category = this.ormCategoryRepository.create(createCategoryDto);
+
+      return await this.ormCategoryRepository.save(category);
+    } catch (error) {
+      console.error('Error al agregar categoría:', error);
+
+      throw new InternalServerErrorException('No se pudo agregar la categoría');
+    }
+  }
+
+  // SEEDER
   async addCategories(): Promise<string> {
     try {
       const insertPromises = datosPre.map((element) =>
@@ -43,6 +75,7 @@ export class CategoryRepository {
     }
   }
 
+  // DELETE CATEGORY
   async deleteCategory(id: number): Promise<string> {
     try {
       const result = await this.ormCategoryRepository.delete(id);
