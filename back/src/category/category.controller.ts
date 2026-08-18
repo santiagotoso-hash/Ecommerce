@@ -24,41 +24,25 @@ import { Category } from './entities/category.entity';
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
-  // =========================
-  // SEEDER
-  // =========================
-
-  @ApiBearerAuth()
+  @ApiBearerAuth('access-token')
   @Get('seeder')
   addCategories() {
     return this.categoryService.addCategories();
   }
 
-  // =========================
-  // GET ALL
-  // =========================
-
-  @ApiBearerAuth()
+  @ApiBearerAuth('access-token')
   @Get()
   findAll() {
     return this.categoryService.findAll();
   }
 
-  // =========================
-  // GET BY ID
-  // =========================
-
-  @ApiBearerAuth()
+  @ApiBearerAuth('access-token')
   @Get(':id')
-  findOne(@Param('id', ParseUUIDPipe) id: number) {
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.categoryService.findById(id);
   }
 
-  // =========================
-  // POST
-  // =========================
-
-  @ApiBearerAuth()
+  @ApiBearerAuth('access-token')
   @Post()
   @ApiOperation({
     summary: 'Crear una categoría',
@@ -75,11 +59,7 @@ export class CategoryController {
     return this.categoryService.addCategory(createCategoryDto);
   }
 
-  // =========================
-  // DELETE
-  // =========================
-
-  @ApiBearerAuth()
+  @ApiBearerAuth('access-token')
   @Delete(':id')
   remove(@Param('id', ParseUUIDPipe) id: number) {
     return this.categoryService.deleteCategory(id);

@@ -3,14 +3,13 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
 import { ParseUUIDPipe } from '@nestjs/common';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { ApiBearerAuth } from '@nestjs/swagger';

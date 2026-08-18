@@ -23,7 +23,11 @@ export class UsersRepository {
       skip: skip,
       take: limit,
     });
-    return allUsers.map(({ password, ...userNoPassword }) => userNoPassword);
+    const users = allUsers.map((user) => {
+      const { password, ...userNoPassword } = user;
+      return userNoPassword;
+    });
+    return users;
   }
 
   async getUserById(id: string): Promise<Omit<Users, 'password' | 'isAdmin'>> {
@@ -73,13 +77,30 @@ export class UsersRepository {
     return userNoPassword;
   }
 
-  async deleteUserById(id: string): Promise<string> {
-    const result = await this.ormUserRepository.delete(id);
-
-    if (result.affected === 0) {
-      throw new NotFoundException(`Usuario con id ${id} no encontrado.`);
+  async getUserByCountry(
+    country: string,
+    page: number,
+    limit: number,
+  ): Promise<Omit<Users, 'password' | 'isAdmin'>[]> {
+    const skip = (page - 1) * limit;
+    const foundUsers = await this.ormUserRepository.find({
+      skip: skip,
+      take: limit,
+      where: { country },
+      relations: {
+        orders: {
+          orderDetail: {
+            products: true,
+          },
+        },
+      },
+    });
+    if (!foundUsers) {
+      throw new NotFoundException(
+        `No se encontró el usuario del pais ${country}`,
+      );
     }
 
-    return 'Usuario eliminado correctamente.';
+    return foundUsers.map(({ password, isAdmin, ...user }) => user);
   }
 }

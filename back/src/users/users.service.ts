@@ -20,10 +20,6 @@ export class UsersService {
     return this.usersRepository.makeUserAdmin(id);
   }
 
-  async deleteUserById(id: string): Promise<string> {
-    return await this.usersRepository.deleteUserById(id);
-  }
-
   async getUserByEmail(email: string) {
     const user = await this.usersRepository.getUserByEmail(email);
 
@@ -34,5 +30,9 @@ export class UsersService {
     const { password, ...userWithoutPassword } = user;
 
     return userWithoutPassword;
+  }
+
+  async getUserByCountry(country: string, page: number, limit: number) {
+    return this.usersRepository.getUserByCountry(country, page, limit);
   }
 }

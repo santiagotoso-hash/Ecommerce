@@ -15,7 +15,11 @@ export class ProductRepository {
     private readonly ormCategoryRepository: Repository<Category>,
   ) {}
 
-  async getAllProducts(page: number, limit: number): Promise<Products[]> {
+  async getAllProducts(
+    page: number,
+    limit: number,
+    order: 'asc' | 'desc',
+  ): Promise<Products[]> {
     const skip = (page - 1) * limit;
     const products = await this.ormProductRepository.find({
       relations: {
@@ -23,6 +27,7 @@ export class ProductRepository {
       },
       skip: skip,
       take: limit,
+      order: { name: order === 'asc' ? 'ASC' : 'DESC' },
     });
     return products;
   }

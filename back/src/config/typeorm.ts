@@ -9,8 +9,8 @@ const config = {
   username: environment.DB_USERNAME,
   password: environment.DB_PASSWORD,
 
-  // entities: ['src/**/*.entity.ts'],
-  migrations: ['src/migrations/*.ts'],
+  entities: ['dist/**/*.entity.ts'],
+  migrations: ['dist/migrations/*{.ts,.js}'],
   autoLoadEntities: true,
   synchronize: true,
   logging: false,
@@ -18,3 +18,6 @@ const config = {
 };
 
 export const typeOrmConfig = registerAs('typeorm', () => config);
+
+import { DataSource, DataSourceOptions } from 'typeorm';
+export const connectionSource = new DataSource(config as DataSourceOptions);

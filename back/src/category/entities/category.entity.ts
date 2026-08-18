@@ -11,7 +11,7 @@ export class Category {
     example: '8f4c3c3d-2e5a-4e55-9b7f-8a9b8c7d6e5f',
   })
   @PrimaryGeneratedColumn('uuid')
-  id!: number;
+  id!: string;
 
   @ApiProperty({
     description: 'Nombre de la categoría',

@@ -10,8 +10,8 @@ export class ProductsService {
     return this.productRepository.addProducts();
   }
 
-  getProducts(page: number, limit: number) {
-    return this.productRepository.getAllProducts(page, limit);
+  getProducts(page: number, limit: number, order: 'asc' | 'desc') {
+    return this.productRepository.getAllProducts(page, limit, order);
   }
 
   getProductById(id: string) {

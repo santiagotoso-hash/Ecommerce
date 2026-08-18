@@ -23,7 +23,7 @@ export class CategoryService {
   }
 
   // GET BY ID
-  async findById(id: number): Promise<Category> {
+  async findById(id: string): Promise<Category> {
     return this.categoryRepository.findById(id);
   }
 

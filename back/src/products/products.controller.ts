@@ -14,7 +14,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
-import type { CreateProductDto } from './dto/product.dto';
+import { CreateProductDto } from './dto/product.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { Roles } from '../decorators/roles.decorator';
@@ -35,13 +35,24 @@ export class ProductsController {
 
   @Get()
   @UseGuards(AuthGuard)
-  getProducts(@Query('page') page: string, @Query('limit') limit: string) {
-    if (page && limit)
-      return this.productsService.getProducts(Number(page), Number(limit));
-    return this.productsService.getProducts(Number(1), Number(5));
+  getProducts(
+    @Query('page') page: string,
+    @Query('limit') limit: string,
+    @Query('order') order: string = 'asc',
+  ): any {
+    const pageNum = Number(page);
+    const limitNum = Number(limit);
+
+    const validPage = !isNaN(pageNum) && pageNum > 0 ? pageNum : 1;
+
+    const validLimit = !isNaN(limitNum) && limitNum > 0 ? limitNum : 5;
+
+    const validOrder = order.toLowerCase() === 'desc' ? 'desc' : 'asc';
+
+    return this.productsService.getProducts(validPage, validLimit, validOrder);
   }
 
-  @ApiBearerAuth()
+  @ApiBearerAuth('access-token')
   @Get(':id')
   @UseGuards(AuthGuard)
   @HttpCode(200)
@@ -49,7 +60,7 @@ export class ProductsController {
     return this.productsService.getProductById(id);
   }
 
-  @ApiBearerAuth()
+  @ApiBearerAuth('access-token')
   @Put(':id')
   @Roles(Role.Admin, Role.Tester)
   @UseGuards(AuthGuard, RolesGuard)
@@ -61,7 +72,7 @@ export class ProductsController {
     return this.productsService.updateProduct(id, product);
   }
 
-  @ApiBearerAuth()
+  @ApiBearerAuth('access-token')
   @Delete(':id')
   @UseGuards(AuthGuard)
   @HttpCode(200)
@@ -69,7 +80,7 @@ export class ProductsController {
     return this.productsService.deleteProduct(id);
   }
 
-  @ApiBearerAuth()
+  @ApiBearerAuth('access-token')
   @Post('upload')
   @UseGuards(AuthGuard)
   @UseInterceptors(FileInterceptor('file'))
