@@ -4,7 +4,9 @@ import { environment } from './environment';
 const config = {
   type: 'postgres',
   database: environment.DB_NAME,
+  // host: 'postgresdb',
   host: environment.DB_HOST,
+
   port: Number(environment.DB_PORT),
   username: environment.DB_USERNAME,
   password: environment.DB_PASSWORD,

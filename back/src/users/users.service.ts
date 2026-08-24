@@ -1,8 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+
 import { UsersRepository } from './users.repository';
-import { Users } from './entities/user.entity';
-import { CreateUserDTO } from './dto/user.dto';
-import { UpdateUserDTO } from './dto/user.dto';
 
 @Injectable()
 export class UsersService {
@@ -34,5 +32,13 @@ export class UsersService {
 
   async getUserByCountry(country: string, page: number, limit: number) {
     return this.usersRepository.getUserByCountry(country, page, limit);
+  }
+
+  async deactivateUser(id: string) {
+    return this.usersRepository.deactivateUser(id);
+  }
+
+  async activateUser(id: string) {
+    return this.usersRepository.activateUser(id);
   }
 }

@@ -17,7 +17,7 @@ import {
   MinLength,
   Validate,
 } from 'class-validator';
-import { matchPassword } from '../../decorators/matchPassword.decorator';
+import { MatchPassword } from '../../decorators/matchPassword.decorator';
 
 export class CreateUserDTO {
   @ApiProperty({
@@ -59,7 +59,7 @@ export class CreateUserDTO {
     example: 'AAbb123@',
   })
   @IsNotEmpty({ message: 'Password es requerido' })
-  @Validate(matchPassword, ['password'])
+  @Validate(MatchPassword, ['password'])
   confirmPassword!: string;
 
   @ApiProperty({
@@ -101,9 +101,9 @@ export class CreateUserDTO {
   @IsEmpty()
   isAdmin?: boolean;
 
-  @ApiHideProperty()
-  @IsEmpty()
-  isTester?: boolean;
+  // @ApiHideProperty()
+  // @IsEmpty()
+  // isTester?: boolean;
 }
 
 export class UpdateUserDTO extends PartialType(

@@ -62,7 +62,7 @@ export class ProductsController {
 
   @ApiBearerAuth('access-token')
   @Put(':id')
-  @Roles(Role.Admin, Role.Tester)
+  @Roles(Role.Admin)
   @UseGuards(AuthGuard, RolesGuard)
   @HttpCode(200)
   updateProduct(

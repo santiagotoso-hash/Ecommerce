@@ -11,7 +11,6 @@ import { Category } from './entities/category.entity';
 import { CreateCategoryDto } from './dto/create-category.dto';
 
 import { datosPre } from '../datos/ArchivoDatos';
-import { stringify } from 'querystring';
 
 @Injectable()
 export class CategoryRepository {

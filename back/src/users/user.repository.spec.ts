@@ -52,7 +52,6 @@ describe('UsersRepository', () => {
         orders: [],
       });
 
-      // Act
       const result = await usersRepository.addUser(createUserDto);
 
       // Assert

@@ -3,7 +3,6 @@ import {
   Get,
   Patch,
   Param,
-  Delete,
   Query,
   ParseUUIDPipe,
   UseGuards,
@@ -38,7 +37,7 @@ export class UsersController {
     description: 'Número de usuarios por página',
   })
   @Get()
-  @Roles(Role.Admin, Role.Tester)
+  @Roles(Role.Admin)
   @UseGuards(AuthGuard, RolesGuard)
   getAllUsers(
     @Query('page') page?: string,
@@ -56,7 +55,7 @@ export class UsersController {
 
   @ApiBearerAuth('access-token')
   @Get('search/email')
-  @Roles(Role.Admin, Role.Tester)
+  @Roles(Role.Admin)
   @UseGuards(AuthGuard, RolesGuard)
   getUserByEmail(@Query('email') email: string) {
     return this.usersService.getUserByEmail(email);
@@ -64,7 +63,7 @@ export class UsersController {
 
   @ApiBearerAuth('access-token')
   @Get('country')
-  @Roles(Role.Admin, Role.Tester)
+  @Roles(Role.Admin)
   @UseGuards(AuthGuard, RolesGuard)
   getUsersByCountry(
     @Query('country') country: string,
@@ -93,5 +92,19 @@ export class UsersController {
   @Roles(Role.Admin)
   makeUserAdmin(@Param('id') id: string) {
     return this.usersService.makeUserAdmin(id);
+  }
+
+  @Patch(':id/deactivate')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  deactivateUser(@Param('id', ParseUUIDPipe) id: string) {
+    return this.usersService.deactivateUser(id);
+  }
+
+  @Patch(':id/activate')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  activateUser(@Param('id', ParseUUIDPipe) id: string) {
+    return this.usersService.activateUser(id);
   }
 }

@@ -12,10 +12,16 @@ export class FileUploadRepository {
         },
         (error, result) => {
           if (error || !result) {
-            reject(error || new Error('Error al cargar imagen en Cloudinary'));
-          } else {
-            resolve(result);
+            const message =
+              error instanceof Error
+                ? error.message
+                : 'Error al cargar imagen en Cloudinary';
+
+            reject(new Error(message));
+            return;
           }
+
+          resolve(result);
         },
       );
 

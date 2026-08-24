@@ -1,207 +1,174 @@
-PM4BE — E-commerce Backend API
+# PM4 Backend - Ecommerce
 
-Backend de uma API REST para uma plataforma de e-commerce, desenvolvida com NestJS, PostgreSQL e TypeORM.
+API REST para una plataforma de ecommerce, desarrollada con **NestJS**, **TypeORM** y **PostgreSQL**. Incluye autenticación con JWT, documentación interactiva con Swagger, carga de imágenes a Cloudinary, y gestión de usuarios, productos, categorías y órdenes.
 
-O projeto possui funcionalidades para gerenciamento de usuários, autenticação, produtos, categorias, pedidos e detalhes dos pedidos.
+Desarrollado por **Santiago Toso**.
 
-🚀 Tecnologias
-NestJS
-TypeScript
-PostgreSQL
-TypeORM
-JWT
-bcrypt
-Swagger
-class-validator / ValidationPipe
-📦 Funcionalidades
-🔐 Auth
-Cadastro de usuários
-Login de usuários
-Autenticação através de JWT
-Controle de acesso por roles
-👤 Users
-Gerenciamento de usuários
-Consulta de usuários
-Controle de usuários administradores
-🛍️ Products
-CRUD de produtos
-Consulta de produtos
-Atualização de produtos
-Paginação na listagem
-📂 Categories
-Gerenciamento de categorias
-Consulta de categorias
-🧾 Orders
-Criação de pedidos
-Consulta de pedidos
-Consulta de pedido por ID
-Associação de produtos aos pedidos
-📋 Order Details
+## Tecnologías
 
-Os OrderDetails representam os itens relacionados aos pedidos e permitem associar produtos às respectivas ordens.
+- [NestJS](https://nestjs.com/) — framework de Node.js
+- [TypeORM](https://typeorm.io/) — ORM para PostgreSQL
+- [PostgreSQL](https://www.postgresql.org/) — base de datos relacional
+- [JWT](https://jwt.io/) — autenticación basada en tokens
+- [Cloudinary](https://cloudinary.com/) — almacenamiento y gestión de imágenes
+- [Swagger](https://swagger.io/) — documentación de la API
+- [Docker](https://www.docker.com/) / Docker Compose — contenedores y orquestación
 
-🏗️ Estrutura do projeto
-src/
-├── auth/
-├── category/
-├── files/
-├── order/
-├── products/
-├── users/
-├── app.controller.ts
-├── app.module.ts
-└── main.ts
-⚙️ Instalação
+## Requisitos previos
 
-Clone o repositório:
+- [Docker](https://docs.docker.com/get-docker/) y [Docker Compose](https://docs.docker.com/compose/install/)
 
-git clone https://github.com/pi-rym/PM4BE-santiagotoso-hash.git
+No hace falta tener Node.js ni PostgreSQL instalados localmente; todo corre dentro de los contenedores.
 
-Entre na pasta:
+## Instalación y ejecución
 
-cd PM4BE-santiagotoso-hash
+1. Cloná el repositorio:
 
-Instale as dependências:
+   ```bash
+   git clone <URL_DEL_REPOSITORIO>
+   cd back
+   ```
 
-npm install
-🔐 Configuração
+2. Creá un archivo `.env` en la raíz del proyecto, basado en las variables de la sección [Variables de entorno](#variables-de-entorno).
 
-A aplicação utiliza variáveis de ambiente através do módulo de configuração do projeto.
+3. Levantá los contenedores:
 
-Crie um arquivo .env com as configurações necessárias para o ambiente.
+   ```bash
+   docker-compose up --build
+   ```
 
-Exemplo:
+4. La API va a estar disponible en:
 
-DATABASE_URL=postgresql://USER:PASSWORD@HOST:PORT/DATABASE
-JWT_SECRET=your-secret-key
+   ```
+   http://localhost:3000
+   ```
+
+5. La documentación interactiva de Swagger está en:
+   ```
+   http://localhost:3000/api
+   ```
+
+### Detener los contenedores
+
+```bash
+docker-compose down
+```
+
+Si querés borrar también los datos persistidos de la base (por ejemplo, para reiniciar la base de datos desde cero):
+
+```bash
+docker-compose down -v
+```
+
+## Variables de entorno
+
+Crear un archivo `.env` en la raíz del proyecto con las siguientes variables:
+
+```dotenv
+# App
 PORT=3000
-DB_HOST=localhost
 
-Os nomes e valores definitivos das variáveis devem corresponder ao arquivo de configuração environment utilizado pelo projeto.
+# Base de datos (usada por la app NestJS)
+DB_NAME=ecommerce
+DB_HOST=postgresdb
+DB_PORT=5432
+DB_USERNAME=postgres
+DB_PASSWORD=123456
 
-Nunca versione o arquivo .env no Git.
+# Base de datos (usada por el contenedor de PostgreSQL)
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=123456
+POSTGRES_DB=ecommerce
 
-🗄️ Banco de dados
+# Cloudinary
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
 
-O projeto utiliza:
+# JWT
+JWT_SECRET=
+JWT_EXPIRES_IN=8h
+```
 
-PostgreSQL como banco de dados
-TypeORM como ORM
+> ⚠️ `DB_HOST` debe coincidir con el nombre del servicio de PostgreSQL definido en `docker-compose.yaml` (`postgresdb`), no con `localhost`.
+> ⚠️ `DB_PASSWORD` y `POSTGRES_PASSWORD` deben tener el mismo valor.
 
-A conexão é configurada através das variáveis de ambiente.
+## Estructura de módulos
 
-▶️ Executando a aplicação
-Desenvolvimento
-npm run start:dev
-Produção
+| Módulo     | Descripción                                        |
+| ---------- | -------------------------------------------------- |
+| `auth`     | Registro e inicio de sesión, autenticación con JWT |
+| `users`    | Gestión de usuarios                                |
+| `products` | Gestión de productos, carga de imágenes            |
+| `category` | Gestión de categorías                              |
+| `order`    | Gestión de órdenes de compra                       |
+| `files`    | Carga de imágenes a Cloudinary                     |
 
-Primeiro compile:
+## Principales endpoints
 
-npm run build
+### Auth
 
-Depois execute:
+| Método | Ruta           | Descripción         |
+| ------ | -------------- | ------------------- |
+| POST   | `/auth/signup` | Registro de usuario |
+| POST   | `/auth/signin` | Inicio de sesión    |
 
-npm run start:prod
+### Users
 
-A aplicação utiliza a porta definida pela variável de ambiente PORT.
+| Método | Ruta                  | Descripción                  |
+| ------ | --------------------- | ---------------------------- |
+| GET    | `/users`              | Listar usuarios              |
+| GET    | `/users/:id`          | Obtener usuario por ID       |
+| GET    | `/users/search/email` | Buscar usuario por email     |
+| GET    | `/users/country`      | Filtrar usuarios por país    |
+| PATCH  | `/users/:id/admin`    | Cambiar rol de administrador |
 
-Por padrão, caso configurada como 3000:
+### Products
 
-http://localhost:3000
-📚 Swagger
+| Método | Ruta               | Descripción                |
+| ------ | ------------------ | -------------------------- |
+| GET    | `/products`        | Listar productos           |
+| GET    | `/products/:id`    | Obtener producto por ID    |
+| PUT    | `/products/:id`    | Actualizar producto        |
+| DELETE | `/products/:id`    | Eliminar producto          |
+| POST   | `/products/upload` | Subir imagen de producto   |
+| GET    | `/products/seeder` | Cargar productos de prueba |
 
-A API possui documentação integrada através do Swagger.
+### Category
 
-A documentação é disponibilizada na rota:
+| Método | Ruta               | Descripción                 |
+| ------ | ------------------ | --------------------------- |
+| GET    | `/category`        | Listar categorías           |
+| GET    | `/category/:id`    | Obtener categoría por ID    |
+| POST   | `/category`        | Crear categoría             |
+| DELETE | `/category/:id`    | Eliminar categoría          |
+| GET    | `/category/seeder` | Cargar categorías de prueba |
 
-http://localhost:3000/api
+### Orders
 
-O título da documentação é:
+| Método | Ruta          | Descripción          |
+| ------ | ------------- | -------------------- |
+| GET    | `/orders`     | Listar órdenes       |
+| POST   | `/orders`     | Crear orden          |
+| GET    | `/orders/:id` | Obtener orden por ID |
+| DELETE | `/orders/:id` | Eliminar orden       |
 
-Proyecto Integrador M4 - Back - Ecommerce
+### Files
 
-Versão:
+| Método | Ruta                     | Descripción                        |
+| ------ | ------------------------ | ---------------------------------- |
+| POST   | `/files/uploadImage/:id` | Subir imagen asociada a un recurso |
 
-1.0.0
+> La documentación completa e interactiva de todos los endpoints, con la posibilidad de probarlos, está disponible en Swagger: `http://localhost:3000/api`
 
-A API está configurada para autenticação Bearer utilizando JWT.
+## Autenticación
 
-No Swagger, utilize:
+La mayoría de los endpoints protegidos requieren un token JWT. Para autenticarte:
 
-Authorize
+1. Registrate con `POST /auth/signup` o iniciá sesión con `POST /auth/signin`.
+2. Copiá el `access_token` recibido en la respuesta.
+3. En Swagger, hacé clic en **Authorize** e ingresá el token con el formato `Bearer <token>`.
 
-e informe:
+## Licencia
 
-Bearer SEU_TOKEN
-
-O esquema de autenticação configurado na documentação é:
-
-HTTP Bearer
-JWT
-🛡️ Validação
-
-A aplicação utiliza o ValidationPipe global do NestJS:
-
-app.useGlobalPipes(
-new ValidationPipe({
-whitelist: true,
-}),
-);
-
-Com whitelist: true, propriedades que não estiverem declaradas nos DTOs de validação são removidas dos objetos recebidos pela API.
-
-Os DTOs são utilizados para controlar e validar os dados recebidos pelos endpoints.
-
-🔑 Autenticação
-
-Os endpoints protegidos utilizam JWT.
-
-Depois de realizar o login, o token retornado deve ser enviado no header:
-
-Authorization: Bearer SEU_TOKEN
-
-Exemplo:
-
-GET /products
-Authorization: Bearer eyJhbGciOiJIUzI1Ni...
-👥 Autorização
-
-O projeto possui controle de acesso baseado em roles.
-
-Os usuários podem possuir diferentes níveis de acesso, incluindo:
-
-USER
-ADMIN
-
-A autorização é implementada através dos Guards do NestJS.
-
-🧪 Testes
-
-Execute os testes com:
-
-npm run test
-
-Modo watch:
-
-npm run test:watch
-📌 Objetivo
-
-O projeto foi desenvolvido como uma API backend de e-commerce, aplicando conceitos de:
-
-NestJS
-TypeScript
-API REST
-PostgreSQL
-TypeORM
-JWT
-bcrypt
-Swagger
-DTOs
-Validação
-Guards
-Roles
-CRUD
-Relacionamentos entre entidades
-👨‍💻 Autor
-
-Santiago Toso
+Proyecto desarrollado con fines educativos, sin licencia formal asociada.

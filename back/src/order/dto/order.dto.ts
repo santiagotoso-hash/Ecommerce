@@ -1,7 +1,26 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsNotEmpty, IsUUID, ArrayMinSize } from 'class-validator';
+import {
+  IsArray,
+  IsNotEmpty,
+  IsUUID,
+  ArrayMinSize,
+  ValidateNested,
+} from 'class-validator';
+import { Type } from 'class-transformer';
 
-import { Products } from '../../products/entities/product.entity';
+export class OrderProductDto {
+  @ApiProperty({
+    example: 'uuid-producto',
+    description: 'UUID del producto',
+  })
+  @IsNotEmpty({
+    message: 'El id del producto es requerido',
+  })
+  @IsUUID(4, {
+    message: 'El id del producto debe ser un UUID v4',
+  })
+  id!: string;
+}
 
 export class CreateOrderDto {
   @ApiProperty({
@@ -17,6 +36,7 @@ export class CreateOrderDto {
   userId!: string;
 
   @ApiProperty({
+    type: [OrderProductDto],
     example: [
       {
         id: 'uuid-producto',
@@ -30,5 +50,7 @@ export class CreateOrderDto {
   @ArrayMinSize(1, {
     message: 'Debe contener al menos 1 producto',
   })
-  products!: Partial<Products>[];
+  @ValidateNested({ each: true })
+  @Type(() => OrderProductDto)
+  products!: OrderProductDto[];
 }

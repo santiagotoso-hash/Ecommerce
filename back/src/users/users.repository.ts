@@ -6,7 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from './entities/user.entity';
 import { Repository } from 'typeorm';
-import { CreateUserDTO, UpdateUserDTO } from './dto/user.dto';
+import { CreateUserDTO } from './dto/user.dto';
 
 @Injectable()
 export class UsersRepository {
@@ -102,5 +102,49 @@ export class UsersRepository {
     }
 
     return foundUsers.map(({ password, isAdmin, ...user }) => user);
+  }
+
+  async deactivateUser(id: string): Promise<Omit<Users, 'password'>> {
+    const user = await this.ormUserRepository.findOne({
+      where: { id },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`No se encontró el usuario con el id ${id}`);
+    }
+
+    if (!user.isActive) {
+      throw new BadRequestException('El usuario ya se encuentra desactivado');
+    }
+
+    user.isActive = false;
+
+    const updatedUser = await this.ormUserRepository.save(user);
+
+    const { password, ...userNoPassword } = updatedUser;
+
+    return userNoPassword;
+  }
+
+  async activateUser(id: string): Promise<Omit<Users, 'password'>> {
+    const user = await this.ormUserRepository.findOne({
+      where: { id },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`No se encontró el usuario con el id ${id}`);
+    }
+
+    if (user.isActive) {
+      throw new BadRequestException('El usuario ya se encuentra activo');
+    }
+
+    user.isActive = true;
+
+    const updatedUser = await this.ormUserRepository.save(user);
+
+    const { password, ...userNoPassword } = updatedUser;
+
+    return userNoPassword;
   }
 }

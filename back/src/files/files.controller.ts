@@ -19,7 +19,6 @@ import {
   ApiConsumes,
   ApiOperation,
   ApiParam,
-  ApiResetContentResponse,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -60,7 +59,7 @@ export class FilesController {
     description: 'Producto no encontrado',
   })
   @Post('uploadImage/:id')
-  @Roles(Role.Admin, Role.Tester)
+  @Roles(Role.Admin)
   @UseGuards(AuthGuard, RolesGuard)
   @UseInterceptors(FileInterceptor('file'))
   async uploadImage(

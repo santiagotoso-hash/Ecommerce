@@ -8,13 +8,16 @@ import {
   name: 'matchPassword',
   async: false,
 })
-export class matchPassword implements ValidatorConstraintInterface {
+export class MatchPassword implements ValidatorConstraintInterface {
   validate(confirmPassword: string, args: ValidationArguments): boolean {
-    const [property] = args.constraints;
-    const password = (args.object as any)[property];
+    const [property] = args.constraints as [string];
+
+    const object = args.object as Record<string, unknown>;
+    const password = object[property];
 
     return password === confirmPassword;
   }
+
   defaultMessage(): string {
     return 'Los passwords no coinciden';
   }
