@@ -3,21 +3,21 @@ import { IsNumber, IsString, IsUUID, Min } from 'class-validator';
 
 export class CreateProductDto {
   @ApiProperty({
-    example: 'Coca Cola',
+    example: 'Xiaomi Xs 3456',
     description: 'Nombre del producto',
   })
   @IsString()
   name!: string;
 
   @ApiProperty({
-    example: 'Bebida gaseosa de 500ml',
+    example: 'Celular Xiaomi Xs, 125megaPixels, 128Mb',
     description: 'Descripción del producto',
   })
   @IsString()
   description!: string;
 
   @ApiProperty({
-    example: 12.5,
+    example: 1200.5,
     description: 'Precio del producto',
   })
   @IsNumber()
@@ -33,7 +33,7 @@ export class CreateProductDto {
   stock!: number;
 
   @ApiProperty({
-    example: '550e8400-e29b-41d4-a716-446655440000',
+    example: '842fad02-d729-41a5-a2f0-607d542eddca',
     description: 'UUID de la categoría',
   })
   @IsUUID()

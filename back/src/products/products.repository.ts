@@ -63,6 +63,29 @@ export class ProductRepository {
     return 'Productos agregados';
   }
 
+  async createProduct(data: CreateProductDto): Promise<Products> {
+    const category = await this.ormCategoryRepository.findOne({
+      where: { id: data.categoryId },
+    });
+
+    if (!category) {
+      throw new NotFoundException(
+        `Categoría con id ${data.categoryId} no encontrada`,
+      );
+    }
+
+    const product = this.ormProductRepository.create({
+      name: data.name,
+      description: data.description,
+      price: data.price,
+      stock: data.stock,
+      imgUrl: data.imgUrl,
+      category,
+    });
+
+    return await this.ormProductRepository.save(product);
+  }
+
   async getProductById(id: string): Promise<Products> {
     const product = await this.ormProductRepository.findOne({
       where: { id },

@@ -87,7 +87,7 @@ export class Users {
   isAdmin!: boolean;
 
   @Column({ default: true })
-  isActive: boolean;
+  isActive!: boolean;
 
   // RELACION CON ORDER 1 : N
   @OneToMany(() => Orders, (order) => order.users)

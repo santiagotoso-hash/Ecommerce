@@ -33,6 +33,14 @@ export class ProductsController {
     return this.productsService.addProducts();
   }
 
+  @Post()
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, RolesGuard)
+  @HttpCode(201)
+  createProduct(@Body() product: CreateProductDto) {
+    return this.productsService.createProduct(product);
+  }
+
   @Get()
   @UseGuards(AuthGuard)
   getProducts(
