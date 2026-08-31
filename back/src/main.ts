@@ -33,7 +33,7 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, documentFactory);
 
   const PORT = Number(environment.PORT);
-  const HOST = environment.DB_HOST || 'localhost';
+  const HOST = '0.0.0.0';
 
   await app.listen(PORT, HOST);
 
