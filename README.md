@@ -73,11 +73,11 @@ DB_NAME=ecommerce
 DB_HOST=postgresdb
 DB_PORT=5432
 DB_USERNAME=postgres
-DB_PASSWORD=123456
+DB_PASSWORD=Tu_password
 
 # Base de datos (usada por el contenedor de PostgreSQL)
 POSTGRES_USER=postgres
-POSTGRES_PASSWORD=123456
+POSTGRES_PASSWORD=Tu_password
 POSTGRES_DB=ecommerce
 
 # Cloudinary
