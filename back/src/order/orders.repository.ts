@@ -106,6 +106,7 @@ export class OrdersRepository {
     orderDetail.price = Number(total.toFixed(2));
     orderDetail.products = productsArray;
     orderDetail.orders = newOrder;
+    orderDetail.freeShipping = orderDetail.price > 200; // 👈 acá
 
     await this.ormOrderDetailsRepository.save(orderDetail);
 

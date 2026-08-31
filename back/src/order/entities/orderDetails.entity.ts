@@ -33,6 +33,9 @@ export class OrderDetails {
   })
   price!: number;
 
+  @Column({ default: false })
+  freeShipping!: boolean;
+
   // RELACIÓN CON ORDERS 1:1
   @ApiProperty({
     description: 'Orden asociada',

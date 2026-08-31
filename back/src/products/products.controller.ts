@@ -42,7 +42,7 @@ export class ProductsController {
   }
 
   @Get()
-  @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard)
   getProducts(
     @Query('page') page: string,
     @Query('limit') limit: string,
